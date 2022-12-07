@@ -12,7 +12,8 @@
 #include <linux/module.h>
 #include <linux/memory.h>
 #include <linux/i2c.h>
-#include <linux/i2c/at24.h>
+// #include <linux/i2c/at24.h>
+#include <linux/platform_data/at24.h>
 #include <linux/kernel.h>
 
 #include "eeprom_device.h"

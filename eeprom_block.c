@@ -47,10 +47,9 @@ static int eb_open(struct block_device *bdev, fmode_t mode)
 	return 0;
 }
 
-static int eb_close(struct gendisk *disk, fmode_t mode)
+static void eb_close(struct gendisk *disk, fmode_t mode)
 {
 	printk(KERN_DEBUG "eb: Device is closed\n");
-	return 0;
 }
 
 /* 
@@ -64,7 +63,7 @@ static int eb_transfer(struct request *req)
 	sector_t start_sector = blk_rq_pos(req);
 	unsigned int sector_cnt = blk_rq_sectors(req);
 
-	struct bio_vec *bv;
+	struct bio_vec bv;
 	struct req_iterator iter;
 
 	sector_t sector_offset;
@@ -79,15 +78,15 @@ static int eb_transfer(struct request *req)
 	sector_offset = 0;
 	rq_for_each_segment(bv, req, iter)
 	{
-		buffer = page_address(bv->bv_page) + bv->bv_offset;
-		if (bv->bv_len % EB_SECTOR_SIZE != 0) {
+		buffer = page_address(bv.bv_page) + bv.bv_offset;
+		if (bv.bv_len % EB_SECTOR_SIZE != 0) {
 			printk(KERN_ERR "eb: Should never happen: "
 					"bio size (%d) is not a multiple of EB_SECTOR_SIZE (%d).\n"
 					"This may lead to data truncation.\n",
-					bv->bv_len, EB_SECTOR_SIZE);
+					bv.bv_len, EB_SECTOR_SIZE);
 			ret = -EIO;
 		}
-		sectors = bv->bv_len / EB_SECTOR_SIZE;
+		sectors = bv.bv_len / EB_SECTOR_SIZE;
 		printk(KERN_DEBUG "eb: Sector Offset: %lld; Buffer: %p; Length: %d sectors\n",
 				sector_offset, buffer, sectors);
 		if (dir == WRITE) /* Write to the device */

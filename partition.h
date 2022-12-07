@@ -9,7 +9,9 @@
 
 #include <linux/types.h>
 
+#ifndef ARRAY_SIZE
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(*a))
+#endif
 
 #define SECTOR_SIZE 512
 #define MBR_SIZE SECTOR_SIZE
